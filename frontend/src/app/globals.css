@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* CineVision tokens */
+  --color-cv-void: #050508;
+  --color-cv-deep: #0a0b12;
+  --color-cv-elev: #12131d;
+  --color-cv-text: #e8eaef;
+  --color-cv-muted: #8b90a0;
+  --color-cv-accent: #f4b942;
+  --color-cv-border: rgba(255, 255, 255, 0.08);
+  --color-cv-danger: #e85d6a;
+}
+
+html {
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* nicer selection */
+::selection {
+  background: rgba(244, 185, 66, 0.25);
+}
