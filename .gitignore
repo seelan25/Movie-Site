@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Maven build output
 **/target/
 
@@ -10,3 +11,6 @@ Thumbs.db
 
 # Logs
 *.log
+=======
+movieService/target
+>>>>>>> 3d6a4ca3ebf60295919aff4a5e4c735b8cdca519
