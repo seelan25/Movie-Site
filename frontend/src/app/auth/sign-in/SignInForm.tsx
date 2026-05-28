@@ -10,7 +10,7 @@ import type { LoginResponse } from "@/lib/types";
 export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const registered = searchParams.get("registered") === "1";
+  const registered = searchParams?.get("registered") === "1";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

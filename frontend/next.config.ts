@@ -6,6 +6,7 @@ const apiBase =
   "http://127.0.0.1:8080";
 
 const nextConfig: NextConfig = {
+  pageExtensions: ["ts", "tsx"],
   async rewrites() {
     return [
       {
