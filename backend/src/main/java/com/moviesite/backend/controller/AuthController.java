@@ -44,11 +44,15 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody AuthDtos.LoginRequest req) {
+        if (req == null || req.password() == null || req.password().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email and password are required."));
+        }
         String email = req.email() == null ? "" : req.email().trim().toLowerCase(Locale.ROOT);
         return userRepository.findByEmail(email)
                 .filter(u -> passwordEncoder.matches(req.password(), u.getPassword()))
                 .<ResponseEntity<?>>map(u -> {
-                    List<String> roles = List.of(u.getRole());
+                    String role = (u.getRole() == null || u.getRole().isBlank()) ? "ROLE_CUSTOMER" : u.getRole();
+                    List<String> roles = List.of(role);
                     String token = jwtService.generate(u.getEmail(), roles);
                     return ResponseEntity.ok(new AuthDtos.LoginResponse(
                             u.getUserId(),
