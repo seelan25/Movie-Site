@@ -1,22 +1,45 @@
 @import "tailwindcss";
 
+:root {
+  --cv-void: #050508;
+  --cv-deep: #0a0b12;
+  --cv-elev: #12131d;
+  --cv-text: #e8eaef;
+  --cv-muted: #8b90a0;
+  --cv-accent: #f4b942;
+  --cv-border: rgba(255, 255, 255, 0.08);
+  --cv-danger: #e85d6a;
+}
+
+html[data-theme="light"] {
+  --cv-void: #f4f6fb;
+  --cv-deep: #ffffff;
+  --cv-elev: #e9edf6;
+  --cv-text: #171a23;
+  --cv-muted: #5a6272;
+  --cv-accent: #d89a24;
+  --cv-border: rgba(15, 23, 42, 0.16);
+  --cv-danger: #c73649;
+}
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
   /* CineVision tokens */
-  --color-cv-void: #050508;
-  --color-cv-deep: #0a0b12;
-  --color-cv-elev: #12131d;
-  --color-cv-text: #e8eaef;
-  --color-cv-muted: #8b90a0;
-  --color-cv-accent: #f4b942;
-  --color-cv-border: rgba(255, 255, 255, 0.08);
-  --color-cv-danger: #e85d6a;
+  --color-cv-void: var(--cv-void);
+  --color-cv-deep: var(--cv-deep);
+  --color-cv-elev: var(--cv-elev);
+  --color-cv-text: var(--cv-text);
+  --color-cv-muted: var(--cv-muted);
+  --color-cv-accent: var(--cv-accent);
+  --color-cv-border: var(--cv-border);
+  --color-cv-danger: var(--cv-danger);
 }
 
 html {
   color-scheme: dark;
+  background: var(--cv-void);
 }
 
 html,
@@ -26,6 +49,7 @@ body {
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* nicer selection */

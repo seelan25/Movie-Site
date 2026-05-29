@@ -20,20 +20,35 @@ export function NavbarAuth() {
     return (
       <>
         {isAdmin ? (
+          <>
+            <Link
+              href="/admin"
+              className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-cv-border hover:text-cv-text sm:text-sm"
+            >
+              Admin
+            </Link>
+            <Link
+              href="/movies/import"
+              className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-cv-border hover:text-cv-text sm:text-sm"
+            >
+              Import
+            </Link>
+          </>
+        ) : (
           <Link
-            href="/movies/import"
-            className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-white/5 hover:text-cv-text sm:text-sm"
+            href="/booking"
+            className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-cv-border hover:text-cv-text sm:text-sm"
           >
-            Import
+            Booking
           </Link>
-        ) : null}
+        )}
         <span className="hidden max-w-[120px] truncate rounded-full border border-cv-border px-2.5 py-2 text-xs text-cv-muted sm:inline md:max-w-[160px] md:text-sm">
           {user.fullName || user.email}
         </span>
         <button
           type="button"
           onClick={signOut}
-          className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-white/5 hover:text-cv-text sm:text-sm"
+          className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-cv-border hover:text-cv-text sm:text-sm"
         >
           Sign out
         </button>
@@ -44,8 +59,14 @@ export function NavbarAuth() {
   return (
     <>
       <Link
+        href="/booking"
+        className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-cv-border hover:text-cv-text sm:text-sm"
+      >
+        Booking
+      </Link>
+      <Link
         href="/auth/sign-in"
-        className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-white/5 hover:text-cv-text sm:text-sm"
+        className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-cv-border hover:text-cv-text sm:text-sm"
       >
         Sign in
       </Link>

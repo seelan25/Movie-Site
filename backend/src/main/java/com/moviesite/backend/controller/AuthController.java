@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -83,5 +84,23 @@ public class AuthController {
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("message", "Invalid email or password.")));
+    }
+
+    @GetMapping("/admin/users")
+    public ResponseEntity<?> listUsersForAdmin(@RequestHeader(value = "Authorization", required = false) String authorization) {
+        if (!jwtService.hasRole(authorization, "ROLE_ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Admin access required."));
+        }
+        List<Map<String, String>> users = userRepository.findAll().stream()
+                .sorted(Comparator.comparing(UserEntity::getFullName, String.CASE_INSENSITIVE_ORDER))
+                .map(u -> Map.of(
+                        "userId", u.getUserId() == null ? "" : u.getUserId(),
+                        "fullName", u.getFullName() == null ? "" : u.getFullName(),
+                        "email", u.getEmail() == null ? "" : u.getEmail(),
+                        "phone", u.getPhone() == null ? "" : u.getPhone(),
+                        "role", u.getRole() == null ? "ROLE_CUSTOMER" : u.getRole()
+                ))
+                .toList();
+        return ResponseEntity.ok(users);
     }
 }

@@ -7,7 +7,7 @@ import { ApiError, apiFetch } from "@/lib/api";
 import { getStoredUser, subscribeAuthChange } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { getOccupiedSeats } from "@/lib/movies";
-import type { CityByMovie, LoginResponse, Movie, SaloonTime } from "@/lib/types";
+import type { BookingSummary, CityByMovie, LoginResponse, Movie, SaloonTime } from "@/lib/types";
 
 type Step = "theater" | "showtime" | "seats" | "pay";
 
@@ -34,23 +34,6 @@ type CreateOrderResponse = {
   id?: string;
   amount: number;
   currency: string;
-};
-
-type BookingSummary = {
-  bookingId: number;
-  bookingCode: string;
-  movieName: string;
-  movieDay: string;
-  movieStartTime: string;
-  cityName: string;
-  saloonName: string;
-  seats: string;
-  seatsCount: number;
-  amountPaise: number;
-  fullName: string;
-  email: string;
-  razorpayOrderId: string;
-  bookedAt?: string | null;
 };
 
 declare global {
@@ -107,6 +90,7 @@ export default function BookingPage({
   }, [selectedSlot?.seatCols]);
   const pricePerSeatPaise = selectedSlot?.pricePerSeatPaise ?? PRICE_PER_SEAT_PAISE;
   const isSignedIn = Boolean(authUser?.token);
+  const isAdmin = Boolean(authUser?.roles?.includes("ROLE_ADMIN"));
 
   useEffect(() => {
     return subscribeAuthChange(() => setAuthUser(getStoredUser()));
@@ -289,6 +273,34 @@ export default function BookingPage({
   }
 
   const steps: Step[] = ["theater", "showtime", "seats", "pay"];
+
+  if (isAdmin) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-10">
+        <div className="rounded-2xl border border-cv-border bg-cv-elev p-6">
+          <p className="text-xs tracking-[0.28em] uppercase text-cv-accent">Admin Mode</p>
+          <h1 className="mt-2 text-2xl font-semibold text-cv-text">Booking is disabled for admin</h1>
+          <p className="mt-3 text-sm text-cv-muted">
+            Admin account is only for monitoring and movie management.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              href="/admin"
+              className="rounded-full border border-cv-border px-4 py-2 text-sm font-semibold text-cv-text hover:bg-white/5"
+            >
+              Open Admin Dashboard
+            </Link>
+            <Link
+              href="/movies/import"
+              className="rounded-full bg-cv-accent px-4 py-2 text-sm font-semibold text-black hover:opacity-90"
+            >
+              Import Movie
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">

@@ -58,3 +58,28 @@ export type RegisterPayload = {
   phone: string;
   password: string;
 };
+
+export type AdminUser = {
+  userId: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  role: string;
+};
+
+export type BookingSummary = {
+  bookingId: number;
+  bookingCode: string;
+  movieName: string;
+  movieDay: string;
+  movieStartTime: string;
+  cityName: string;
+  saloonName: string;
+  seats: string;
+  seatsCount: number;
+  amountPaise: number;
+  fullName: string;
+  email: string;
+  razorpayOrderId: string;
+  bookedAt?: string | null;
+};

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="CineVision">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1c2130" />
+      <stop offset="100%" stop-color="#0b0f18" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8cc6b" />
+      <stop offset="100%" stop-color="#e9a728" />
+    </linearGradient>
+  </defs>
+
+  <rect x="6" y="6" width="116" height="116" rx="24" fill="url(#bg)" />
+  <rect x="6" y="6" width="116" height="116" rx="24" fill="none" stroke="#2a3145" stroke-width="2" />
+
+  <g fill="url(#accent)">
+    <circle cx="28" cy="28" r="5" />
+    <circle cx="46" cy="28" r="5" />
+    <circle cx="64" cy="28" r="5" />
+    <circle cx="82" cy="28" r="5" />
+    <circle cx="100" cy="28" r="5" />
+  </g>
+
+  <path
+    d="M31 41h66a9 9 0 0 1 9 9v28a9 9 0 0 1-9 9H31a9 9 0 0 1-9-9V50a9 9 0 0 1 9-9z"
+    fill="#111827"
+    stroke="#2f374c"
+    stroke-width="2"
+  />
+  <path d="M43 54l14 10-14 10z" fill="url(#accent)" />
+  <path d="M65 52h27v4H65zm0 8h23v4H65zm0 8h27v4H65zm0 8h19v4H65z" fill="#b8bfd1" />
+</svg>
