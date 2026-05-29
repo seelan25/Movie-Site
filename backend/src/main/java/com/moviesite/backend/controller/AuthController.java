@@ -18,6 +18,8 @@ import java.util.Map;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class AuthController {
+    private static final String ADMIN_EMAIL = "admin@cine.com";
+    private static final String ADMIN_PASSWORD = "Seelan@25";
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -27,6 +29,10 @@ public class AuthController {
         String email = req.email() == null ? "" : req.email().trim().toLowerCase(Locale.ROOT);
         if (email.isBlank() || req.password() == null || req.password().length() < 6) {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid registration payload."));
+        }
+        if (ADMIN_EMAIL.equals(email)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "This email is reserved for admin login."));
         }
         if (userRepository.existsByEmail(email)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Email already exists."));
@@ -48,6 +54,18 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "Email and password are required."));
         }
         String email = req.email() == null ? "" : req.email().trim().toLowerCase(Locale.ROOT);
+        if (ADMIN_EMAIL.equals(email) && ADMIN_PASSWORD.equals(req.password())) {
+            List<String> roles = List.of("ROLE_ADMIN");
+            String token = jwtService.generate(ADMIN_EMAIL, roles);
+            return ResponseEntity.ok(new AuthDtos.LoginResponse(
+                    "ADMIN-STATIC",
+                    ADMIN_EMAIL,
+                    "CineVision Admin",
+                    "",
+                    roles,
+                    token
+            ));
+        }
         return userRepository.findByEmail(email)
                 .filter(u -> passwordEncoder.matches(req.password(), u.getPassword()))
                 .<ResponseEntity<?>>map(u -> {

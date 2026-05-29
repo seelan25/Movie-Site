@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ApiError, apiFetch } from "@/lib/api";
+import { getStoredUser, isAdminUser } from "@/lib/auth";
 import { getCategories, getDirectors } from "@/lib/movies";
-import type { Category, Director, LoginResponse, Movie } from "@/lib/types";
+import type { Category, Director, Movie } from "@/lib/types";
 
 export default function ImportMoviePage() {
   const [url, setUrl] = useState("");
@@ -24,6 +25,7 @@ export default function ImportMoviePage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Movie | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin] = useState(() => isAdminUser());
 
   useEffect(() => {
     getCategories()
@@ -35,15 +37,8 @@ export default function ImportMoviePage() {
   }, []);
 
   function getToken(): string | null {
-    if (typeof window === "undefined") return null;
-    const raw = localStorage.getItem("cv_user");
-    if (!raw) return null;
-    try {
-      const u = JSON.parse(raw) as LoginResponse;
-      return u.token || null;
-    } catch {
-      return null;
-    }
+    const u = getStoredUser();
+    return u?.token || null;
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -113,16 +108,27 @@ export default function ImportMoviePage() {
     }
   }
 
+  if (!isAdmin) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-10">
+        <p className="text-xs tracking-[0.28em] uppercase text-cv-accent">Admin</p>
+        <h1 className="mt-2 text-2xl font-semibold text-cv-text">Import movie from URL</h1>
+        <div className="mt-6 rounded-xl border border-cv-border bg-black/25 p-4 text-sm text-cv-danger">
+          Only admin can access this page. Please sign in with admin credentials.
+        </div>
+        <p className="mt-4 text-sm text-cv-muted">
+          <Link href="/auth/sign-in" className="text-cv-accent font-semibold">
+            Go to sign in
+          </Link>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <p className="text-xs tracking-[0.28em] uppercase text-cv-accent">Admin</p>
       <h1 className="mt-2 text-2xl font-semibold text-cv-text">Import movie from URL</h1>
-      <p className="mt-2 text-sm text-cv-muted leading-relaxed">
-        Paste a{" "}
-        <span className="text-cv-text">themoviedb.org/movie/…</span> or{" "}
-        <span className="text-cv-text">imdb.com/title/tt…</span> link. The Java service
-        creates the movie plus theater setup (timings, seat layout, and ticket amount) in PostgreSQL.
-      </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-cv-border bg-cv-elev p-6">
         <div>

@@ -42,6 +42,11 @@ export function getAuthToken(): string | null {
   return getStoredUser()?.token ?? null;
 }
 
+export function isAdminUser(): boolean {
+  const roles = getStoredUser()?.roles || [];
+  return roles.includes("ROLE_ADMIN");
+}
+
 export function subscribeAuthChange(callback: () => void): () => void {
   if (typeof window === "undefined") {
     return () => {};

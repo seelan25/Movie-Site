@@ -39,10 +39,6 @@ export function SignInForm() {
   return (
     <div className="mx-auto max-w-md rounded-2xl border border-cv-border bg-cv-elev p-6">
       <h1 className="text-2xl font-semibold text-cv-text">Sign in</h1>
-      <p className="mt-2 text-sm text-cv-muted">
-        Uses <code className="text-cv-accent">POST /api/user/auth/login</code> on
-        the API gateway.
-      </p>
 
       {registered ? (
         <div className="mt-4 rounded-xl border border-cv-accent/30 bg-[rgba(244,185,66,0.08)] p-3 text-sm text-cv-text">

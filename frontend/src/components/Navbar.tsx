@@ -25,12 +25,6 @@ export function Navbar() {
           >
             Booking
           </Link>
-          <Link
-            href="/movies/import"
-            className="hidden rounded-full px-3 py-2 text-cv-muted hover:bg-white/5 hover:text-cv-text sm:inline"
-          >
-            Import
-          </Link>
           <NavbarAuth />
         </nav>
       </div>

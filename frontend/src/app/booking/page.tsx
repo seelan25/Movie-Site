@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import Script from "next/script";
 import { useEffect, useMemo, useState } from "react";
 import { ApiError, apiFetch } from "@/lib/api";
-import { getStoredUser } from "@/lib/auth";
+import { getStoredUser, subscribeAuthChange } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { dedupeMovies, getBrowseMovies, getOccupiedSeats } from "@/lib/movies";
-import type { CityByMovie, Movie, SaloonTime } from "@/lib/types";
+import type { CityByMovie, LoginResponse, Movie, SaloonTime } from "@/lib/types";
 
 type Step = "movie" | "theater" | "showtime" | "seats" | "pay";
 type RazorpayHandler = () => void | Promise<void>;
@@ -56,12 +57,14 @@ declare global {
 const DEFAULT_SEAT_ROWS = 6;
 const DEFAULT_SEAT_COLS = 12;
 const DEFAULT_PRICE_PER_SEAT_PAISE = 19900;
+const MAX_SEATS_PER_BOOKING = 8;
 
 function seatLabel(row: string, col: number) {
   return `${row}${col}`;
 }
 
 export default function BookingHubPage() {
+  const [authUser, setAuthUser] = useState<LoginResponse | null>(() => getStoredUser());
   const [step, setStep] = useState<Step>("movie");
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovieId, setSelectedMovieId] = useState<string>("");
@@ -93,6 +96,18 @@ export default function BookingHubPage() {
   }, [selectedSlot?.seatCols]);
   const pricePerSeatPaise =
     selectedSlot?.pricePerSeatPaise ?? DEFAULT_PRICE_PER_SEAT_PAISE;
+  const isSignedIn = Boolean(authUser?.token);
+
+  useEffect(() => {
+    return subscribeAuthChange(() => setAuthUser(getStoredUser()));
+  }, []);
+
+  useEffect(() => {
+    if (!authUser) return;
+    setFullName(authUser.fullName || "");
+    setEmail(authUser.email || "");
+    setPhone(authUser.phone || "");
+  }, [authUser]);
 
   useEffect(() => {
     getBrowseMovies()
@@ -136,13 +151,34 @@ export default function BookingHubPage() {
       .catch(() => setOccupied([]));
   }, [selectedSlot?.id]);
 
+  useEffect(() => {
+    if (!selectedSlot?.id) return;
+    const timer = window.setInterval(() => {
+      getOccupiedSeats(selectedSlot.id).then(setOccupied).catch(() => {});
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [selectedSlot?.id]);
+
   function toggleSeat(code: string) {
     const c = code.toUpperCase();
     if (occupiedSet.has(c)) return;
     setSelectedSeats((prev) => {
       if (prev.includes(c)) return prev.filter((x) => x !== c);
+      if (prev.length >= MAX_SEATS_PER_BOOKING) {
+        alert(`You can book up to ${MAX_SEATS_PER_BOOKING} seats in one booking.`);
+        return prev;
+      }
       return [...prev, c].sort();
     });
+  }
+
+  function isStepUnlocked(target: Step): boolean {
+    if (target === "movie") return true;
+    if (target === "theater") return Boolean(selectedMovieId);
+    if (target === "showtime") return Boolean(selectedCity);
+    if (target === "seats") return Boolean(selectedSlot);
+    if (target === "pay") return Boolean(selectedSlot && selectedSeats.length > 0);
+    return false;
   }
 
   async function startPayment() {
@@ -152,12 +188,26 @@ export default function BookingHubPage() {
     }
     if (!movie || !selectedSlot?.id || !selectedMovieId) return;
     if (!selectedCity || !selectedSaloonId) return;
+    if (!isSignedIn) {
+      alert("Please sign in before making a booking.");
+      return;
+    }
     if (!email || !fullName) {
       alert("Please fill in name and email.");
       return;
     }
     if (selectedSeats.length === 0) {
       alert("Pick at least one seat.");
+      return;
+    }
+    const latestOccupied = await getOccupiedSeats(selectedSlot.id).catch(() => []);
+    const latestOccupiedSet = new Set(latestOccupied.map((s) => s.toUpperCase()));
+    const conflicts = selectedSeats.filter((s) => latestOccupiedSet.has(s.toUpperCase()));
+    if (conflicts.length > 0) {
+      setOccupied(latestOccupied);
+      setSelectedSeats((prev) => prev.filter((s) => !latestOccupiedSet.has(s.toUpperCase())));
+      alert(`Seat already booked: ${conflicts.join(", ")}. Please choose another seat.`);
+      setStep("seats");
       return;
     }
 
@@ -265,11 +315,17 @@ export default function BookingHubPage() {
             <button
               key={s}
               type="button"
-              onClick={() => setStep(s)}
+              onClick={() => {
+                if (!isStepUnlocked(s)) return;
+                setStep(s);
+              }}
+              disabled={!isStepUnlocked(s)}
               className={`shrink-0 rounded-full border px-3 py-2 text-xs font-semibold sm:text-sm ${
                 step === s
                   ? "border-cv-accent bg-[rgba(244,185,66,0.12)] text-cv-text"
-                  : "border-cv-border text-cv-muted hover:bg-white/5 hover:text-cv-text"
+                  : isStepUnlocked(s)
+                    ? "border-cv-border text-cv-muted hover:bg-white/5 hover:text-cv-text"
+                    : "cursor-not-allowed border-cv-border text-cv-muted/50"
               }`}
             >
               {i + 1}.{" "}
@@ -411,6 +467,23 @@ export default function BookingHubPage() {
           ) : step === "seats" ? (
             <div>
               <h2 className="text-lg font-semibold text-cv-text">Pick your seats</h2>
+              <p className="mt-1 text-xs text-cv-muted">
+                Live seat status refreshes every 5 seconds. Max {MAX_SEATS_PER_BOOKING} seats per booking.
+              </p>
+              <div className="mt-3 rounded-xl border border-cv-border bg-black/20 px-3 py-2 text-center text-xs font-semibold uppercase tracking-widest text-cv-muted">
+                Screen This Way
+              </div>
+              <div className="mt-3 flex flex-wrap gap-4 text-xs text-cv-muted">
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-sm border border-cv-border bg-cv-deep" /> Available
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-sm bg-cv-accent" /> Selected
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-sm bg-cv-deep opacity-40" /> Sold
+                </span>
+              </div>
               <div className="mt-4 space-y-2 overflow-x-auto pb-2">
                 {seatRows.map((row) => (
                   <div key={row} className="flex min-w-max items-center gap-1">
@@ -441,6 +514,25 @@ export default function BookingHubPage() {
                   </div>
                 ))}
               </div>
+              {selectedSeats.length > 0 ? (
+                <div className="mt-4 rounded-xl border border-cv-border bg-black/20 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-cv-muted">Selected seats</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {selectedSeats.map((seat) => (
+                      <span key={seat} className="rounded-full bg-cv-accent/20 px-3 py-1 text-xs font-semibold text-cv-text">
+                        {seat}
+                      </span>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSeats([])}
+                    className="mt-3 text-xs font-semibold text-cv-accent hover:opacity-90"
+                  >
+                    Clear all
+                  </button>
+                </div>
+              ) : null}
               <button
                 type="button"
                 className="mt-6 rounded-2xl bg-cv-accent px-6 py-3 font-semibold text-black hover:opacity-90 disabled:opacity-40"
@@ -453,6 +545,15 @@ export default function BookingHubPage() {
           ) : (
             <div>
               <h2 className="text-lg font-semibold text-cv-text">Passenger details</h2>
+              {!isSignedIn ? (
+                <div className="mt-3 rounded-xl border border-cv-border bg-black/25 p-3 text-sm text-cv-danger">
+                  Please{" "}
+                  <Link href="/auth/sign-in" className="font-semibold text-cv-accent">
+                    sign in
+                  </Link>{" "}
+                  to continue booking.
+                </div>
+              ) : null}
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="text-sm font-semibold text-cv-text">Full name</label>
@@ -491,7 +592,8 @@ export default function BookingHubPage() {
                   !selectedCity ||
                   !selectedSaloonId ||
                   !selectedSlot ||
-                  selectedSeats.length === 0
+                  selectedSeats.length === 0 ||
+                  !isSignedIn
                 }
               >
                 Pay with Razorpay

@@ -16,8 +16,17 @@ export function NavbarAuth() {
   }
 
   if (user) {
+    const isAdmin = user.roles?.includes("ROLE_ADMIN");
     return (
       <>
+        {isAdmin ? (
+          <Link
+            href="/movies/import"
+            className="rounded-full px-3 py-2 text-xs text-cv-muted hover:bg-white/5 hover:text-cv-text sm:text-sm"
+          >
+            Import
+          </Link>
+        ) : null}
         <span className="hidden max-w-[120px] truncate rounded-full border border-cv-border px-2.5 py-2 text-xs text-cv-muted sm:inline md:max-w-[160px] md:text-sm">
           {user.fullName || user.email}
         </span>

@@ -7,6 +7,7 @@ import com.moviesite.backend.model.SaloonEntity;
 import com.moviesite.backend.repository.MovieRepository;
 import com.moviesite.backend.repository.MovieSaloonTimeRepository;
 import com.moviesite.backend.repository.SaloonRepository;
+import com.moviesite.backend.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ public class MovieController {
     private final MovieRepository movieRepository;
     private final MovieSaloonTimeRepository movieSaloonTimeRepository;
     private final SaloonRepository saloonRepository;
+    private final JwtService jwtService;
 
     @GetMapping("/movies/displayingMovies")
     public List<MovieDtos.MovieResponse> displayingMovies() {
@@ -88,6 +90,9 @@ public class MovieController {
     private MovieDtos.MovieResponse importFromUrlInternal(MovieDtos.ImportFromUrlRequest request, String uploadedImageUrl) {
         if (request == null || request.url() == null || request.url().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Movie URL is required");
+        }
+        if (!jwtService.hasRole(request.userAccessToken(), "ROLE_ADMIN")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only admin can import movies.");
         }
 
         String sourceUrl = request.url().trim();
