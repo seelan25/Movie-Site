@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd frontend && npm install",
-  "buildCommand": "cd frontend && npm run build",
-  "devCommand": "cd frontend && npm run dev"
+  "installCommand": "if [ -d frontend ]; then cd frontend; fi; npm install",
+  "buildCommand": "if [ -d frontend ]; then cd frontend; fi; npm run build",
+  "devCommand": "if [ -d frontend ]; then cd frontend; fi; npm run dev"
 }
