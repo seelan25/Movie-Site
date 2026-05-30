@@ -87,19 +87,23 @@ export default function AdminDashboardPage() {
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-cv-border bg-cv-elev p-4">
+        <div className="cv-panel relative overflow-hidden p-4">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_10%,var(--cv-accent-soft),transparent_48%)]" />
           <p className="text-xs uppercase tracking-wider text-cv-muted">Users</p>
           <p className="mt-1 text-2xl font-semibold text-cv-text">{users.length}</p>
         </div>
-        <div className="rounded-2xl border border-cv-border bg-cv-elev p-4">
+        <div className="cv-panel relative overflow-hidden p-4">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_18%,var(--cv-accent-soft),transparent_45%)]" />
           <p className="text-xs uppercase tracking-wider text-cv-muted">Movies</p>
           <p className="mt-1 text-2xl font-semibold text-cv-text">{movies.length}</p>
         </div>
-        <div className="rounded-2xl border border-cv-border bg-cv-elev p-4">
+        <div className="cv-panel relative overflow-hidden p-4">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_10%,var(--cv-accent-soft),transparent_48%)]" />
           <p className="text-xs uppercase tracking-wider text-cv-muted">Completed Bookings</p>
           <p className="mt-1 text-2xl font-semibold text-cv-text">{bookings.length}</p>
         </div>
-        <div className="rounded-2xl border border-cv-border bg-cv-elev p-4">
+        <div className="cv-panel relative overflow-hidden p-4">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_10%,var(--cv-accent-soft),transparent_48%)]" />
           <p className="text-xs uppercase tracking-wider text-cv-muted">Revenue</p>
           <p className="mt-1 text-2xl font-semibold text-cv-text">₹{(totalRevenuePaise / 100).toFixed(0)}</p>
         </div>
@@ -114,7 +118,7 @@ export default function AdminDashboardPage() {
         </Link>
       </div>
 
-      <section className="mt-8 rounded-2xl border border-cv-border bg-cv-elev p-4 sm:p-6">
+      <section className="cv-panel mt-8 p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-cv-text">Users</h2>
         {loading ? (
           <p className="mt-3 text-sm text-cv-muted">Loading users...</p>
@@ -146,7 +150,7 @@ export default function AdminDashboardPage() {
         )}
       </section>
 
-      <section className="mt-8 rounded-2xl border border-cv-border bg-cv-elev p-4 sm:p-6">
+      <section className="cv-panel mt-8 p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-cv-text">Movies</h2>
         {loading ? (
           <p className="mt-3 text-sm text-cv-muted">Loading movies...</p>
@@ -165,7 +169,7 @@ export default function AdminDashboardPage() {
         )}
       </section>
 
-      <section className="mt-8 rounded-2xl border border-cv-border bg-cv-elev p-4 sm:p-6">
+      <section className="cv-panel mt-8 p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-cv-text">Booking Details</h2>
         {loading ? (
           <p className="mt-3 text-sm text-cv-muted">Loading bookings...</p>

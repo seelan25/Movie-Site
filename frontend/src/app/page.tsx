@@ -22,8 +22,9 @@ export default async function Home() {
   }
 
   return (
-    <div className="bg-cv-void">
+    <div>
       <section className="relative overflow-hidden border-b border-cv-border">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_25%,var(--cv-accent-soft),transparent_35%)]" />
         <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16 lg:py-20">
           <div className="grid items-center gap-10 lg:grid-cols-12">
             <div className="lg:col-span-7">
@@ -32,7 +33,7 @@ export default async function Home() {
               </p>
               <h1 className="mt-4 text-3xl font-semibold tracking-tight text-cv-text sm:text-5xl">
                 CineVision
-                <span className="mt-3 block text-xl text-cv-muted sm:text-3xl">
+                <span className="mt-3 block bg-gradient-to-r from-cv-text to-cv-muted bg-clip-text text-xl text-transparent sm:text-3xl">
                   Find your next watch. Book your seat in minutes.
                 </span>
               </h1>
@@ -45,13 +46,13 @@ export default async function Home() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/search"
-                  className="inline-flex items-center justify-center rounded-full bg-cv-accent px-6 py-3 font-semibold text-black hover:opacity-90"
+                  className="inline-flex items-center justify-center rounded-full bg-cv-accent px-6 py-3 font-semibold text-black shadow-[0_8px_24px_var(--cv-accent-soft)] hover:opacity-90"
                 >
                   Search movies
                 </Link>
                 <a
                   href="#now-playing"
-                  className="inline-flex items-center justify-center rounded-full border border-cv-border px-6 py-3 font-semibold text-cv-text hover:bg-white/5"
+                  className="inline-flex items-center justify-center rounded-full border border-cv-border px-6 py-3 font-semibold text-cv-text hover:bg-cv-border"
                 >
                   Now playing
                 </a>
@@ -59,7 +60,7 @@ export default async function Home() {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="rounded-2xl border border-cv-border bg-cv-elev p-5 shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
+              <div className="cv-panel p-5">
                 <p className="text-sm font-semibold text-cv-text">
                   Quick search
                 </p>
@@ -70,7 +71,7 @@ export default async function Home() {
                   <input
                     name="q"
                     placeholder="Search: Top Gun, Avatar, …"
-                    className="w-full rounded-xl border border-cv-border bg-cv-deep px-4 py-3 text-cv-text placeholder:text-cv-muted focus:outline-none focus:ring-2 focus:ring-[rgba(244,185,66,0.25)]"
+                    className="w-full rounded-xl border border-cv-border bg-cv-deep px-4 py-3 text-cv-text placeholder:text-cv-muted focus:outline-none focus:ring-2 focus:ring-cv-accent-soft"
                   />
                   <button className="rounded-xl bg-cv-accent px-4 py-3 font-semibold text-black hover:opacity-90 sm:py-0">
                     Go
@@ -78,19 +79,19 @@ export default async function Home() {
                 </form>
 
                 <div className="mt-6 grid grid-cols-2 gap-2 text-xs text-cv-muted sm:grid-cols-3">
-                  <div className="rounded-xl border border-cv-border bg-black/20 p-3">
+                  <div className="rounded-xl border border-cv-border bg-cv-deep/70 p-3">
                     <p className="text-cv-text font-semibold">
                       {displaying.length}
                     </p>
                     <p className="mt-1">Now playing</p>
                   </div>
-                  <div className="rounded-xl border border-cv-border bg-black/20 p-3">
+                  <div className="rounded-xl border border-cv-border bg-cv-deep/70 p-3">
                     <p className="text-cv-text font-semibold">
                       {comingSoon.length}
                     </p>
                     <p className="mt-1">Coming soon</p>
                   </div>
-                  <div className="rounded-xl border border-cv-border bg-black/20 p-3">
+                  <div className="rounded-xl border border-cv-border bg-cv-deep/70 p-3">
                     <p className="text-cv-text font-semibold">Book</p>
                     <p className="mt-1">Seat + pay</p>
                   </div>
@@ -103,7 +104,7 @@ export default async function Home() {
 
       {apiError ? (
         <section className="mx-auto max-w-6xl px-4 pt-10">
-          <div className="rounded-2xl border border-cv-danger/40 bg-cv-elev p-6">
+          <div className="cv-panel border-cv-danger/40 p-6">
             <p className="font-semibold text-cv-danger">Backend unavailable</p>
             <p className="mt-2 text-sm text-cv-muted">{apiError}</p>
             <p className="mt-3 text-sm text-cv-muted">
@@ -118,10 +119,7 @@ export default async function Home() {
         <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <h2 className="text-2xl font-semibold text-cv-text">Now playing</h2>
-            <p className="mt-2 text-sm text-cv-muted">
-              Movies currently in theaters — from{" "}
-              <code className="text-cv-accent">/api/movie/movies/displayingMovies</code>
-            </p>
+            <p className="mt-2 text-sm text-cv-muted">Movies currently in theaters near you.</p>
           </div>
           <Link
             href="/search"
@@ -147,10 +145,7 @@ export default async function Home() {
         <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <h2 className="text-2xl font-semibold text-cv-text">Coming soon</h2>
-            <p className="mt-2 text-sm text-cv-muted">
-              Upcoming releases — from{" "}
-              <code className="text-cv-accent">/api/movie/movies/comingSoonMovies</code>
-            </p>
+            <p className="mt-2 text-sm text-cv-muted">Upcoming releases you can watchlist now.</p>
           </div>
         </div>
         <div className="mt-8">

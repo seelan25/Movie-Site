@@ -31,8 +31,10 @@ export default async function SearchPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+      <div className="cv-panel relative overflow-hidden p-5 sm:p-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_15%,var(--cv-accent-soft),transparent_40%)]" />
+        <div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
           <h1 className="text-2xl font-semibold tracking-tight text-cv-text">
             Search movies
           </h1>
@@ -42,21 +44,22 @@ export default async function SearchPage({
           </p>
         </div>
 
-        <form action="/search" className="flex w-full flex-col gap-2 sm:w-[420px] sm:flex-row">
-          <input
-            name="q"
-            defaultValue={qRaw ?? ""}
-            placeholder="Search: Avatar, Top Gun, …"
-            className="w-full rounded-xl border border-cv-border bg-cv-deep px-4 py-3 text-cv-text placeholder:text-cv-muted focus:outline-none focus:ring-2 focus:ring-[rgba(244,185,66,0.25)]"
-          />
-          <button className="rounded-xl bg-cv-accent px-5 py-3 font-semibold text-black hover:opacity-90 sm:py-0">
-            Search
-          </button>
-        </form>
+          <form action="/search" className="flex w-full flex-col gap-2 sm:w-[420px] sm:flex-row">
+            <input
+              name="q"
+              defaultValue={qRaw ?? ""}
+              placeholder="Search: Avatar, Top Gun, …"
+              className="w-full rounded-xl border border-cv-border bg-cv-deep px-4 py-3 text-cv-text placeholder:text-cv-muted focus:outline-none focus:ring-2 focus:ring-cv-accent-soft"
+            />
+            <button className="rounded-xl bg-cv-accent px-5 py-3 font-semibold text-black hover:opacity-90 sm:py-0">
+              Search
+            </button>
+          </form>
+        </div>
       </div>
 
       {apiError ? (
-        <div className="mt-8 rounded-2xl border border-cv-danger/40 bg-cv-elev p-6">
+        <div className="cv-panel mt-8 border-cv-danger/40 p-6">
           <p className="font-semibold text-cv-danger">Could not reach the API</p>
           <p className="mt-2 text-sm text-cv-muted">{apiError}</p>
         </div>
@@ -77,7 +80,7 @@ export default async function SearchPage({
       </div>
 
       {!apiError && results.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-cv-border bg-cv-elev p-6">
+        <div className="cv-panel mt-10 p-6">
           <p className="font-semibold text-cv-text">
             {q ? "No results" : "No movies yet"}
           </p>
